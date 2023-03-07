@@ -20,13 +20,17 @@ df <- add_column(df, date = as.Date(substring(df$started_at, 1, 10)), .after = "
 df <- add_column(df, month = month(df$date, label =TRUE), .after = "date")
 df <- add_column(df, weekday = weekdays(as.Date(df$date, format = "%m/%d/%Y")), .after = "month")
 
-#write.csv(df, "cleaned_merged_data.csv", row.names = FALSE)
+summary(df$trip_length)
 
-df <- read.csv("cleaned_merged_data.csv")
+# Some entries have negative ride times, since they're <200 wee will just delete them
+df <- subset(df, trip_length > 0)
 
-summary()
+# One of the entries has a trip length of over 28 days
+# I am making an assumption here about the data in saying that i would be very unpleasant to ride for over 24 straight hours
+# There is also another story to be told about the cases that are over 24 hours are all docked bikes rented out by all casual members
+sd(df$trip_length)
+df <- subset(df, trip_length < 1500)
 
-
-
+write.csv(df, "cleaned_merged_data.csv", row.names = FALSE)
 
 
